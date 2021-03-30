@@ -5,6 +5,8 @@ import {
 import {
 	IExecuteFunctions,
 	IHookFunctions,
+	NodeApiError,
+	NodeOperationError,
 } from 'n8n-core';
 
 import {
@@ -40,7 +42,7 @@ export async function spotifyApiRequest(this: IHookFunctions | IExecuteFunctions
 		const credentials = this.getCredentials('spotifyOAuth2Api');
 
 		if (credentials === undefined) {
-			throw new Error('No credentials got returned!');
+			throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
 		}
 
 		if (Object.keys(body).length === 0) {
@@ -49,18 +51,8 @@ export async function spotifyApiRequest(this: IHookFunctions | IExecuteFunctions
 
 		return await this.helpers.requestOAuth2.call(this, 'spotifyOAuth2Api', options);
 	} catch (error) {
-		if (error.statusCode === 401) {
-			// Return a clear error
-			throw new Error('The Spotify credentials are not valid!');
-		}
 
-		if (error.error && error.error.error && error.error.error.message) {
-			// Try to return the error prettier
-			throw new Error(`Spotify error response [${error.error.error.status}]: ${error.error.error.message}`);
-		}
-
-		// If that data does not exist for some reason return the actual error
-		throw error;
+		throw new NodeApiError(this.getNode(), error);
 	}
 }
 

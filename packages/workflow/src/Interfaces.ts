@@ -36,6 +36,7 @@ export interface IExecutionError {
 	message: string;
 	node?: string;
 	stack?: string;
+	description?: string; // TEMP - for displaying new error class in UI
 }
 
 // Get used to gives nodes access to credentials
@@ -765,3 +766,12 @@ export interface IWorkflowHooksOptionalParameters {
 export interface IWorkflowSettings {
 	[key: string]: IDataObject | string | number | boolean | undefined;
 }
+
+export interface IErrorObject {
+	[key: string]: string | object | number | boolean | undefined | null | string[] | object[] | number[] | boolean[];
+}
+
+export interface IStatusCodeMessages {
+	[key: string]: string;
+}
+

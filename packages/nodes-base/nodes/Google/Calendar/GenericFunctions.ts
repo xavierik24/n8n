@@ -6,6 +6,7 @@ import {
 	IExecuteFunctions,
 	IExecuteSingleFunctions,
 	ILoadOptionsFunctions,
+	NodeApiMultiError,
 } from 'n8n-core';
 
 import {
@@ -33,17 +34,19 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 		//@ts-ignore
 		return await this.helpers.requestOAuth2.call(this, 'googleCalendarOAuth2Api', options);
 	} catch (error) {
-		if (error.response && error.response.body && error.response.body.error) {
 
-			let errors = error.response.body.error.errors;
+		throw new NodeApiMultiError(this.getNode(), error);
+		// if (error.response && error.response.body && error.response.body.error) {
 
-			errors = errors.map((e: IDataObject) => e.message);
-			// Try to return the error prettier
-			throw new Error(
-				`Google Calendar error response [${error.statusCode}]: ${errors.join('|')}`,
-			);
-		}
-		throw error;
+		// 	let errors = error.response.body.error.errors;
+
+		// 	errors = errors.map((e: IDataObject) => e.message);
+		// 	// Try to return the error prettier
+		// 	throw new Error(
+		// 		`Google Calendar error response [${error.statusCode}]: ${errors.join('|')}`,
+		// 	);
+		// }
+		// throw error;
 	}
 }
 
